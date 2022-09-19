@@ -11,6 +11,7 @@ export default function App() {
 	const { DateTime } = require("luxon");
 	const url = `https://geo.ipify.org/api/v2/country,city?apiKey=${process.env.REACT_APP_API_CODE}`;
 	const [ipdata, setIpdata] = useState();
+	const [countrydata, setCountrydata] = useState();
 	const localtime = DateTime.now();
 
 	useEffect(() => {
@@ -20,8 +21,22 @@ export default function App() {
 			.catch((error) => console.log(error));
 	}, [url]);
 
+	useEffect(() => {
+		if (ipdata) {
+			const url2 = `https://geo.ipify.org/api/v2/country,city?apiKey=${ipdata.location.country}`;
+			fetch(url2)
+				.then((response) => response.json())
+				.then((data) => setCountrydata(data))
+				.catch((error) => console.log(error));
+		}
+	}, [ipdata]);
+
 	if (ipdata) {
 		console.log("Ipdata", ipdata);
+		if (countrydata && countrydata.code !== 403) {
+			console.log("countrydata", countrydata);
+			
+		}
 	}
 
 
@@ -45,6 +60,15 @@ export default function App() {
 								<p>Koordinaten: {ipdata.location.lat}, {ipdata.location.lng}</p>
 								<p>Lokalzeit: {localtime.setZone("UTC" + ipdata.location.timezone.replace("0", "")).toISO()}</p>
 								<p>Die Adresse befindet sich in Zeitzone: {localtime.zoneName}</p>
+
+								{countrydata && countrydata.code !== 403 ? (
+									<div>
+										<img src={ countrydata[0].flags.png } alt={ countrydata[0].name.nativeName.deu.official } />
+										{ console.log(countrydata) }
+									</div>
+								) : (
+									'Bitte warten auf Country Daten'
+								)}
 							</Card.Text>
 						</Card.Body>
 					</Card>
