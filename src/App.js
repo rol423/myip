@@ -23,7 +23,7 @@ export default function App() {
 
 	useEffect(() => {
 		if (ipdata) {
-			const url2 = `https://geo.ipify.org/api/v2/country,city?apiKey=${ipdata.location.country}`;
+			const url2 = `https://restcountries.com/v3.1/alpha?codes=${ipdata.location.country}`;
 			fetch(url2)
 				.then((response) => response.json())
 				.then((data) => setCountrydata(data))
